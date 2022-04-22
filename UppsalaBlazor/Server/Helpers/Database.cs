@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UppsalaBlazor.Shared;
 
 namespace UppsalaBlazor.Server.Helpers
@@ -11,16 +12,17 @@ namespace UppsalaBlazor.Server.Helpers
         public void CreateNew()
         {
             var newId = _nextId++;
-            var newItem= new TodoListItem(newId, "New title", "New description");
+            var newItem= new TodoListItem(newId, "New title", "New description", 1);
             _items.Add(newId, newItem);
         }
 
-        public void UpdateItem(int id, string title, string description)
+        public void UpdateItem(int id, string title, string description, int hours)
         {
             if (_items.TryGetValue(id, out var item))
             {
                 item.Title = title;
                 item.Description = description;
+                item.Hours = hours;
             }
         }
 
@@ -30,9 +32,9 @@ namespace UppsalaBlazor.Server.Helpers
             return null;
         }
 
-        public IEnumerable<TodoListItem> GetItems()
+        public List<TodoListItem> GetItems()
         {
-            return _items.Values;
+            return TodoListItem.Calculate(_items.Values.ToList());
         }
 
         public void DeleteItemById(int id)

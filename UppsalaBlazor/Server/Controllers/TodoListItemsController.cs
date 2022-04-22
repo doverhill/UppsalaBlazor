@@ -35,7 +35,7 @@ namespace UppsalaBlazor.Server.Controllers
         [Route("update")]
         public IEnumerable<TodoListItem> Update([FromBody] TodoListItem item)
         {
-            _db.UpdateItem(item.Id, item.Title, item.Description);
+            _db.UpdateItem(item.Id, item.Title, item.Description, item.Hours);
             return _db.GetItems();
         }
 

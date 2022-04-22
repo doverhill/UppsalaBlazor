@@ -9,6 +9,12 @@
         <input type="text" value=@Item.Description @onchange=HandleDescriptionChange />
     </span>
 
+    <span class="todoItemHours">
+        <input type="number" value=@Item.Hours @onchange=HandleHoursChange />
+    </span>
+
+    Percentage of all: @Item.PercentOfTotal%
+
     <button @onclick=HandleDelete>Delete this item</button>
 </div>
 
@@ -36,6 +42,12 @@
     private void HandleDescriptionChange(ChangeEventArgs e)
     {
         Item.Description = (string)e.Value;
+        OnChange?.Invoke(Item);
+    }
+
+    private void HandleHoursChange(ChangeEventArgs e)
+    {
+        Item.Hours = int.Parse((string)e.Value);
         OnChange?.Invoke(Item);
     }
 }
