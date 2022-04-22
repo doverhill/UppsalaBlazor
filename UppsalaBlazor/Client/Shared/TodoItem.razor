@@ -1,0 +1,41 @@
+﻿@using UppsalaBlazor.Shared
+
+<div class="todoItem">
+    <span class="todoItemTitle">
+        <input type="text" value=@Item.Title @onchange=HandleTitleChange />
+    </span>
+
+    <span class="todoItemDescription">
+        <input type="text" value=@Item.Description @onchange=HandleDescriptionChange />
+    </span>
+
+    <button @onclick=HandleDelete>Delete this item</button>
+</div>
+
+@code {
+    [Parameter]
+    public TodoListItem Item { get; set; }
+
+    [Parameter]
+    public Action<TodoListItem> OnDelete { get; set; }
+
+    [Parameter]
+    public Action<TodoListItem> OnChange { get; set; }
+
+    private void HandleDelete(MouseEventArgs e)
+    {
+        OnDelete?.Invoke(Item);
+    }
+
+    private void HandleTitleChange(ChangeEventArgs e)
+    {
+        Item.Title = (string)e.Value;
+        OnChange?.Invoke(Item);
+    }
+
+    private void HandleDescriptionChange(ChangeEventArgs e)
+    {
+        Item.Description = (string)e.Value;
+        OnChange?.Invoke(Item);
+    }
+}

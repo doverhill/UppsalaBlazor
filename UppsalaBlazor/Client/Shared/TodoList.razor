@@ -1,0 +1,70 @@
+﻿@using UppsalaBlazor.Shared
+@using UppsalaBlazor.Client.Helpers
+
+@inject HttpClient Http
+
+<h3>TodoList</h3>
+
+@foreach (var item in items)
+{
+    <TodoItem Item=@item OnDelete=@(async (item) => await HandleDeleteItem(item)) OnChange=@(async (item) => await HandleChange(item)) />
+}
+
+<button @onclick=AddNewItem>Add item</button>
+
+@* add error handling here? *@
+
+@code {
+    private List<TodoListItem> items = new List<TodoListItem>();
+    private bool error;
+
+    private void DumpItem(string message, TodoListItem item)
+    {
+        Console.WriteLine($"{message}: id={item.Id}, Title={item.Title}, Description={item.Description}");
+    }
+
+    private async Task HandleDeleteItem(TodoListItem item)
+    {
+        DumpItem("DELETE", item);
+        // delete item
+        var result = await API.MakeRequest<List<TodoListItem>>(Http, $"TodoListItems/delete/{item.Id}", HttpMethod.Get);
+        error = !result.Success;
+        if (result.Success) items = result.Result;
+        StateHasChanged();
+    }
+
+    private async Task HandleChange(TodoListItem item)
+    {
+        DumpItem("UPDATE", item);
+        // update item
+        var result = await API.MakeRequest<List<TodoListItem>>(Http, $"TodoListItems/update", item, HttpMethod.Post);
+        error = !result.Success;
+        if (result.Success) items = result.Result;
+        StateHasChanged();
+    }
+
+    private async Task AddNewItem(MouseEventArgs e)
+    {
+        // add item
+        var result = await API.MakeRequest<List<TodoListItem>>(Http, "TodoListItems/add", HttpMethod.Get);
+        error = !result.Success;
+        if (result.Success) items = result.Result;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // load items
+        var result = await API.MakeRequest<List<TodoListItem>>(Http, "TodoListItems/getAll", HttpMethod.Get);
+        error = !result.Success;
+        if (result.Success) items = result.Result;
+
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                DumpItem("LOADED", item);
+            }
+        }
+    }
+}
